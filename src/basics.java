@@ -141,7 +141,7 @@ public class basics {
 	 * helper method to get the current state of the game
 	 * @return 2d array represent the state
 	 */
-	private char[][] getState() {
+	public char[][] getState() {
 		char[][] state = new char[6][6];
 		for (int i = 0; i < 6; i ++) {
 			for (int j = 0; j < 6; j ++) {
@@ -161,6 +161,17 @@ public class basics {
 			}
 		}
 		return state;
+	}
+	public basics clone() {
+		basics re = new basics();
+		for (int k = 0; k < 4; k ++) {
+			for (int i = 0; i < 3; i ++) {
+				for (int j = 0; j < 3; j ++) {
+					re.myPlates.get(k)[i][j] = myPlates.get(k)[i][j];
+				}
+			}
+		}
+		return re;
 	}
 
 	/**

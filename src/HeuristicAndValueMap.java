@@ -79,6 +79,8 @@ public class HeuristicAndValueMap {
 		char prev = '-';
 		for (int j = 0; j < 6; j ++) {
 			if (state[i][j] == 'b') {
+				myValueb[i][j] = -10;
+				myValuew[i][j] = -10;
 				if (prev == 'w' && countw > 1) {
 					sumUp(ROWHEAD, i, 1, countw);
 //					System.out.println("Should count w now");
@@ -87,10 +89,15 @@ public class HeuristicAndValueMap {
 				countb ++;
 				if (j == 5) {
 					sumUp(ROWHEAD, i, 0, countb);
+					if (j - countb> 0  && myValueb[i][j - countb] >= 0) {
+						myValueb[i][j - countb] += countb;
+					}
 //					System.out.println("Should count b now");
 					countb = 0;
 				}
 			} else if (state[i][j] == 'w') {
+				myValueb[i][j] = -10;
+				myValuew[i][j] = -10;
 				if (prev == 'b' && countb > 1) {
 					sumUp(ROWHEAD, i, 0, countb);
 //					System.out.println("Should count b now");
@@ -99,19 +106,29 @@ public class HeuristicAndValueMap {
 				countw ++;
 				if (j == 5) {
 					sumUp(ROWHEAD, i, 1, countw);
+					if (j - countw> 0  && myValuew[i][j - countw] >= 0) {
+						myValuew[i][j - countw] += countw;
+					}
 //					System.out.println("Should count w now");
 					countw = 0;
+					
 				}
 			} else {
 				if (prev == 'w') {
 					if (countw > 1){
 						sumUp(ROWHEAD, i, 1, countw);	
 					}
+					if (j - countw - 1> 0  && myValuew[i][j - countw - 1] >= 0) {
+						myValuew[i][j - countw - 1] += countw;
+					}
 					myValuew[i][j] = countw;
 //					System.out.println("Should count w now");
 				} else if (prev == 'b'){
 					if (countb > 1){
 						sumUp(ROWHEAD, i, 0, countb);
+					}
+					if (j - countb - 1> 0  && myValueb[i][j - countb - 1] >= 0) {
+						myValueb[i][j - countb - 1] += countb;
 					}
 					myValueb[i][j] = countb;
 //					System.out.println("Should count b now");
@@ -140,6 +157,8 @@ public class HeuristicAndValueMap {
 		char prev = '-';
 		for (int i = 0; i < 6; i ++) {
 			if (state[i][j] == 'b') {
+				myValueb[i][j] = -10;
+				myValuew[i][j] = -10;
 				if (prev == 'w' && countw > 1) {
 					sumUp(COLHEAD, j, 1, countw);
 //					System.out.println("Should count w now");
@@ -149,9 +168,14 @@ public class HeuristicAndValueMap {
 				if (i == 5) {
 					sumUp(COLHEAD, j, 0, countb);
 //					System.out.println("Should count b now");
+					if (i - countb> 0  && myValueb[i - countb][j] >= 0) {
+						myValueb[i - countb][j] += countb;
+					}
 					countb = 0;
 				}
 			} else if (state[i][j] == 'w') {
+				myValueb[i][j] = -10;
+				myValuew[i][j] = -10;
 				if (prev == 'b' && countb > 1) {
 					sumUp(COLHEAD, j, 0, countb);
 //					System.out.println("Should count b now");
@@ -160,6 +184,9 @@ public class HeuristicAndValueMap {
 				countw ++;
 				if (i == 5) {
 					sumUp(COLHEAD, j, 1, countw);
+					if (i - countw> 0  && myValuew[i - countw][j] >= 0) {
+						myValuew[i - countw][j] += countw;
+					}
 //					System.out.println("Should count w now");
 					countw = 0;
 				}
@@ -168,13 +195,19 @@ public class HeuristicAndValueMap {
 					if (countw > 1){
 						sumUp(COLHEAD, j, 1, countw);	
 					}
-					myValuew[i][j] = countw;
+					if (i - countw - 1> 0  && myValuew[i - countw - 1][j] >= 0) {
+						myValuew[i - countw - 1][j] += countw;
+					}
+					myValuew[i][j] += countw;
 //					System.out.println("Should count w now, countw = " + countw);
 				} else if (prev == 'b'){
 					if (countb > 1){
 						sumUp(COLHEAD, j, 0, countb);
 					}
-					myValueb[i][j] = countb;
+					if (i - countb - 1> 0  && myValueb[i - countb - 1][j] >= 0) {
+						myValueb[i - countb - 1][j] += countb;
+					}
+					myValueb[i][j] += countb;
 //					System.out.println("Should count b now, countb = " + countb);
 				} 
 				countw = 0;
@@ -214,6 +247,7 @@ public class HeuristicAndValueMap {
 			}
 			if (state[k][l] == 'b') {
 				myValueb[k][l] = -10;
+				myValuew[k][l] = -10;
 				if (prev == 'w' && countw > 1) {
 					sumUp(DIAGHEAD, diagChoice, 1, countw);
 //					System.out.println("Should count w now");
@@ -223,12 +257,19 @@ public class HeuristicAndValueMap {
 				if (k == 5) {
 					sumUp(DIAGHEAD, diagChoice, 0, countb);
 //					System.out.println("Should count b now");
+					if (diagChoice == 1 && k - countb> 0  && myValueb[k - countb][l - countb] >= 0) {
+						myValueb[k - countb][l - countb] += countb;
+					} else if (diagChoice == 2 && k - countb > 0 && myValueb[k - countb][l + countb] >= 0) {
+						myValueb[k - countb][l + countb] += countb;
+					}
 					countb = 0;
 				}
 			} else if (state[k][l] == 'w') {
 				myValueb[k][l] = -10;
+				myValuew[k][l] = -10;
 				if (prev == 'b' && countb > 1) {
 					sumUp(DIAGHEAD, diagChoice, 0, countb);
+
 //					System.out.println("Should count b now");
 					countb = 0;
 				}
@@ -236,6 +277,12 @@ public class HeuristicAndValueMap {
 				if (k == 5) {
 					sumUp(DIAGHEAD, diagChoice, 1, countw);
 //					System.out.println("Should count w now");
+					if (diagChoice == 1 && k - countw> 0  && myValuew[k - countw][l - countw] >= 0) {
+						System.out.println(myValuew[k - countw][l - countw]);
+						myValuew[k - countw][l - countw] += countw;
+					} else if (diagChoice == 2 && k - countb> 0 && myValuew[k - countb][l + countb] >= 0) {
+						myValuew[k - countw][l + countw] += countw;
+					}
 					countw = 0;
 				}
 			} else {
@@ -243,16 +290,26 @@ public class HeuristicAndValueMap {
 					if (countw > 1){
 						sumUp(DIAGHEAD, diagChoice, 1, countw);	
 					}
+//					System.out.println("k = " + k + " l = " + l + " DC = " + diagChoice + " if k - countw > 0 " + 
+//					(k - countw > 0)  +  " k - countw: " + (k - countw) + "l - countw " + (l - countw ) + 
+//					" value with kl" + myValuew[k - countw][l - countw ]+ "Countw = " + countw);
+//					System.out.println(diagChoice == 1 && k - countw - 1> 0  && myValuew[k - countw - 1][l - countw - 1] >= 0);
+					if (diagChoice == 1 && k - countw - 1> 0  && myValuew[k - countw - 1][l - countw - 1] >= 0) {
+						System.out.println(myValuew[k - countw - 1][l - countw - 1]);
+						myValuew[k - countw - 1][l - countw - 1] += countw;
+					} else if (diagChoice == 2 && k - countb - 1> 0 && myValuew[k - countb - 1][l + countb - 1] >= 0) {
+						myValuew[k - countw - 1][l + countw + 1] += countw;
+					}
 					myValuew[k][l] += countw;
 //					System.out.println("Should count w now, countw = " + countw);
 				} else if (prev == 'b'){
 					if (countb > 1) {
 						sumUp(DIAGHEAD, diagChoice, 0, countb);
 					}
-					if (diagChoice == 1 && k - countb > 0  && myValueb[k - countb][l - countb ] >= 0) {
-						myValueb[k - countb][l - countb] += countb;
-					} else if (diagChoice == 2 && k - countb > 0 && myValueb[k - countb][l + countb] >= 0) {
-						myValueb[k - countb][l + countb] += countb;
+					if (diagChoice == 1 && k - countb - 1> 0  && myValueb[k - countb - 1][l - countb - 1] >= 0) {
+						myValueb[k - countb - 1][l - countb - 1] += countb;
+					} else if (diagChoice == 2 && k - countb > 0 && myValueb[k - countb - 1][l + countb + 1] >= 0) {
+						myValueb[k - countb - 1][l + countb + 1] += countb;
 					}
 					myValueb[k][l] += countb;
 //					System.out.println("Should count b now, countb = " + countb);
@@ -271,25 +328,25 @@ public class HeuristicAndValueMap {
 	 * method to print out the maps
 	 */
 	public void print() {
-		System.out.println("Heursitics!!!!!!!!!"); 
-		for (String a : myHeuristic.keySet()) {
-			System.out.println(a + ": b = " + myHeuristic.get(a)[0] + " w = " + myHeuristic.get(a)[1]);
-		}
+//		System.out.println("Heursitics!!!!!!!!!"); 
+//		for (String a : myHeuristic.keySet()) {
+//			System.out.println(a + ": b = " + myHeuristic.get(a)[0] + " w = " + myHeuristic.get(a)[1]);
+//		}
 		System.out.println("Values B!!!!!!!!!");
 		StringBuilder s = new StringBuilder();
 		for (int i = 0; i < 6; i ++) {
 			for (int j = 0; j < 6; j ++) {
-				s.append(myValueb[i][j]);
+				s.append(String.format("%4d",myValueb[i][j]));
 				s.append(' ');
 			}
 			s.append('\n');
 		}
-		System.out.println("Values W!!!!!!!!!");
 		System.out.println(s.toString());
+		System.out.println("Values W!!!!!!!!!");
 		s = new StringBuilder();
 		for (int i = 0; i < 6; i ++) {
 			for (int j = 0; j < 6; j ++) {
-				s.append(myValuew[i][j]);
+				s.append(String.format("%4d", myValuew[i][j]));
 				s.append(' ');
 			}
 			s.append('\n');
