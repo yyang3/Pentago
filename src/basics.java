@@ -7,6 +7,14 @@ public class basics {
 	 * the array contains 4 plates for the pentago
 	 */
 	private List<char[][]> myPlates;
+	/**
+	 * int showing misplace
+	 */
+	public static int PUTERROR = -10;
+	/**
+	 * int showing misrotate
+	 */
+	public static int ROTERROR = -20;
 
 	/**
 	 * constructor
@@ -19,57 +27,21 @@ public class basics {
 		initialize();
 	}
 	/**
-	 * method to make one move and check the situation
-	 * @param place place to put
-	 * @param plate plate to put
-	 * @param player player char
-	 * @param plater plate to rotate
-	 * @param direction direction to rotate
-	 * @return 1 if b win
-	 * 		   -1 if w win
-	 * 		   -10 if put is wrong
-	 * 		   -20 if rot is wrong
-	 * 		   TIE if the game is tie
-	 */
-	public int step(int place, int plate, char player, int plater, char direction) {
-		place = place - 1;
-		plate = plate - 1;
-		plater = plater - 1;
-		System.out.println("place = " + 
-				place + " plate = " + plate + "player = " + player + "plater = " + plater + "direction = " + direction);
-		boolean pass = place(place, plate, player);
-		if (!pass) {
-			return -10;
-		}
-		print();
-		HeuristicAndValueMap a = new HeuristicAndValueMap(getState());
-		a.print();
-		pass = pass && rotate (plater, direction);
-		if (!pass) {
-			return -20;
-		}
-		print();
-		a = new HeuristicAndValueMap(getState());
-		a.print();
-		return -10;
-	}
-
-	/**
 	 * method to put
 	 * @param place place to put
 	 * @param plate plate to put
 	 * @param player player char
 	 * @return if the move is right
 	 */
-	private boolean place(int place, int plate, char player) {
+	public boolean place(int place, int plate, char player) {
 		int i = (place) / 3;
 		int j = (place) % 3;
 		if ((myPlates.get(plate))[i][j] == '-') {
 			(myPlates.get(plate))[i][j] = player;
 			return true;
 		} else {
-			System.out.println("Sth wrong: place = " + 
-		place + " plate = " + plate + "player = " + player);
+//			System.out.println("Sth wrong: place = " + 
+//					place + " plate = " + plate + "player = " + player);
 			return false;
 		}
 	}
@@ -80,7 +52,7 @@ public class basics {
 	 * @param direction direction to rotate
 	 * @return if the move is right
 	 */
-	private boolean rotate (int plater, char direction) {
+	public boolean rotate (int plater, char direction) {
 		if (plater > -1 && plater < 4) {
 			char[][] rotated = new char[3][3];
 			char[][] current = myPlates.get(plater);
@@ -172,6 +144,9 @@ public class basics {
 			}
 		}
 		return re;
+	}
+	public char[][] getPlate (int plateNum) {
+		return myPlates.get(plateNum - 1 );
 	}
 
 	/**
