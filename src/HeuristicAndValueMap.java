@@ -4,7 +4,11 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-
+/**
+ * class to build the heuristic value of a board
+ * @author Yicong Yang
+ *
+ */
 public class HeuristicAndValueMap {
 	/**
 	 * heuristic map of the value on each row, col and diag
@@ -70,53 +74,21 @@ public class HeuristicAndValueMap {
 		for (int i = 0; i < 6; i ++) {
 			myHeuristic.put(ROWHEAD + Integer.toString(i),new int[]{0,0});
 			checkRow(i, Input);
-			if ((myHeuristic.get(ROWHEAD + Integer.toString(i))[0] >=FOURINAROW 
-					&& myHeuristic.get(ROWHEAD + Integer.toString(i))[1] <=FOURINAROW)
-					||(myHeuristic.get(ROWHEAD + Integer.toString(i))[1] >=FOURINAROW 
-							&& myHeuristic.get(ROWHEAD + Integer.toString(i))[0] <=FOURINAROW)) {
-				int temp = myHeuristic.get(ROWHEAD + Integer.toString(i))[0];
-				myHeuristic.get(ROWHEAD + Integer.toString(i))[0] 
-						= myHeuristic.get(ROWHEAD + Integer.toString(i))[1];
-				myHeuristic.get(ROWHEAD + Integer.toString(i))[1] = temp;
-			} 
 		}
 		//col
 		for (int i = 0; i < 6; i ++) {
 			myHeuristic.put(COLHEAD + Integer.toString(i),new int[]{0,0});
 			checkCol(i, Input);
-			if ((myHeuristic.get(COLHEAD + Integer.toString(i))[0] >=FOURINAROW 
-					&& myHeuristic.get(COLHEAD + Integer.toString(i))[1] <=FOURINAROW)
-					||(myHeuristic.get(COLHEAD + Integer.toString(i))[1] >=FOURINAROW 
-							&& myHeuristic.get(COLHEAD + Integer.toString(i))[0] <=FOURINAROW)) {
-				int temp = myHeuristic.get(COLHEAD + Integer.toString(i))[0];
-				myHeuristic.get(COLHEAD + Integer.toString(i))[0] 
-						= myHeuristic.get(COLHEAD + Integer.toString(i))[1];
-				myHeuristic.get(COLHEAD + Integer.toString(i))[1] = temp;
-			}
 		}
 		myHeuristic.put(DIAGHEAD + Integer.toString(1),new int[]{0,0});
 		myHeuristic.put(DIAGHEAD + Integer.toString(2),new int[]{0,0});
 		checkDiag(0, 0,Input);
-		if ((myHeuristic.get(DIAGHEAD + Integer.toString(1))[0] >=FOURINAROW 
-				&& myHeuristic.get(DIAGHEAD + Integer.toString(1))[1] <=FOURINAROW)
-				||(myHeuristic.get(DIAGHEAD + Integer.toString(1))[1] >=FOURINAROW 
-						&& myHeuristic.get(DIAGHEAD + Integer.toString(1))[0] <=FOURINAROW)) {
-			int temp = myHeuristic.get(DIAGHEAD + Integer.toString(1))[0];
-			myHeuristic.get(DIAGHEAD + Integer.toString(1))[0] 
-					= myHeuristic.get(DIAGHEAD + Integer.toString(1))[1];
-			myHeuristic.get(DIAGHEAD + Integer.toString(1))[1] = temp;
-		}
 		checkDiag(0, 5,Input);
-		if ((myHeuristic.get(DIAGHEAD + Integer.toString(2))[0] >=FOURINAROW 
-				&& myHeuristic.get(DIAGHEAD + Integer.toString(2))[1] <=FOURINAROW)
-				||(myHeuristic.get(DIAGHEAD + Integer.toString(2))[1] >=FOURINAROW 
-						&& myHeuristic.get(DIAGHEAD + Integer.toString(2))[0] <=FOURINAROW)) {
-			int temp = myHeuristic.get(DIAGHEAD + Integer.toString(2))[0];
-			myHeuristic.get(DIAGHEAD + Integer.toString(2))[0] 
-					= myHeuristic.get(DIAGHEAD + Integer.toString(2))[1];
-			myHeuristic.get(DIAGHEAD + Integer.toString(2))[1] = temp;
-		}
 	}
+	/**
+	 * method to check if a 2d state is winning
+	 * @return 
+	 */
 	public int checkWin() {
 		boolean bwin = false;
 		boolean wwin = false;
@@ -138,6 +110,12 @@ public class HeuristicAndValueMap {
 		}
 		
 	}
+	/**
+	 * helper method to count the number of neighboring stones on one row
+	 * @param i the index of row
+	 * @param state the board state
+	 * @return the heuristic value of this row
+	 */
 	private int checkRow(int i, char[][] state) {
 //		System.out.println("Row starts!!!!!!!! Row " + i);
 		int countb = 0;

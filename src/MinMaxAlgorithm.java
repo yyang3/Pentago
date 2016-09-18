@@ -1,16 +1,28 @@
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
 
 
+/**
+ * the class to do minmax
+ * @author Yicong Yang
+ *
+ */
 public class MinMaxAlgorithm {
+	/**
+	 * the starting state of the board
+	 */
 	private basics myBasics;
+	/**
+	 * the character represent the player
+	 */
 	private char myPlayer;
-	private static final int DEPTHLIMIT = 4;
-	
+	/**
+	 * the largest depth that this algorithm goes (have put and rotate separate here)
+	 */
+	private static final int DEPTHLIMIT = 3;
+	/**
+	 * constructor
+	 * @param theBasics the board
+	 * @param thePlayer the player
+	 */
 	public MinMaxAlgorithm (basics theBasics, char thePlayer) {
 		myBasics = theBasics.clone();
 		myPlayer = thePlayer;
@@ -23,25 +35,41 @@ public class MinMaxAlgorithm {
 	 */
 	
 	public basics solution() {
-		System.out.println("In solution!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 		Node Start = new Node(myBasics, myPlayer);
 		buildPut(Start, myPlayer, 0);
-		uploadH(Start, 1, myPlayer);
+		uploadH(Start, 0);
 		int result = Start.getH();
 		for (Node temp : Start.getChildren()) {
 			if (temp.getH() == result) {
-				return temp.getBasics();
+				if (new HeuristicAndValueMap(temp.getBasics().getState()).checkWin() 
+								!= HeuristicAndValueMap.CONT || temp.getBasics().getStepCount() >= 36) {
+					System.out.println("NOt -2" + new HeuristicAndValueMap(temp.getBasics().getState()).checkWin() 
+							+ "game finished: " + temp.getBasics().getStepCount());
+					return temp.getBasics();
+				} else {
+					System.out.println("-2" + new HeuristicAndValueMap(temp.getBasics().getState()).checkWin() 
+							+ "game not finished: " + temp.getBasics().getStepCount());
+					for (Node temp2 : temp.getChildren()) {
+						if (temp2.getH() == result) {
+							return temp2.getBasics();
+						}
+					}
+				}
+				
 			}
 		}
 		return null;
 	}
-
+	/**
+	 * helper method to build put movement
+	 * @param in the current board
+	 * @param p the player
+	 * @param depth current depth
+	 */
 	private void buildPut (Node in, char p, int depth){
 		int [] platenum= {0,1,2,3};
 		int [] placenum= {0,1,2,3,4,5,6,7,8,};
-		if (depth == DEPTHLIMIT) {
-			in.setH();
-		} else {
+		if (depth != DEPTHLIMIT) {
 			for (int i : platenum) {
 				for (int j : placenum) {
 					basics temp = in.getBasics().clone(); 
@@ -49,7 +77,8 @@ public class MinMaxAlgorithm {
 						Node tempNode = new Node(temp, p);
 						in.addC(tempNode);
 //						temp.print();
-						if (depth < DEPTHLIMIT) {
+						if (depth < DEPTHLIMIT && new HeuristicAndValueMap(tempNode.getBasics().getState()).checkWin() 
+								== HeuristicAndValueMap.CONT) {
 							bulidRotate (tempNode, p, depth + 1);
 						}
 					}
@@ -57,6 +86,12 @@ public class MinMaxAlgorithm {
 			}
 		}
 	}
+	/**
+	 * helper method to build rotate movement
+	 * @param in the current board
+	 * @param p the player
+	 * @param depth current depth
+	 */
 	private void bulidRotate (Node in, char p, int depth) {
 //		System.out.println("In buildRot");
 		int [] platenum= {0,1,2,3};
@@ -73,170 +108,44 @@ public class MinMaxAlgorithm {
 					Node tempNode = new Node(temp, p);
 					in.addC(tempNode);
 //					temp.print();
-					if (depth < DEPTHLIMIT) {
+					if (depth < DEPTHLIMIT && new HeuristicAndValueMap(tempNode.getBasics().getState()).checkWin() 
+							== HeuristicAndValueMap.CONT) {
 						buildPut (tempNode, pl, depth + 1);
 					}
 				}
 			}
 		}
 	}
-	private void uploadH (Node in, int depth, char p) {
+	/**
+	 * helper method to update heuristic values for all nodes
+	 * @param in the current board
+	 * @param depth current depth
+	 */
+	private void uploadH (Node in, int depth) {
 		char pl = 'b';
-		if (depth%2 ==0) {
-			pl = p;
+		if ((depth/ 2) % 2 == 0) {
+			pl = myPlayer;
 		} else {
-			if (p == 'b') {
+			if (myPlayer == 'b') {
 				pl = 'w';
 			} else {
 				pl = 'b';
 			}
 		}
-		
-		if (depth == DEPTHLIMIT) {
-			in.setH();
-		} else {
-			for (Node temp : in.getChildren()) {
-				uploadH(temp, depth + 1, pl);
-			}
-			if (p == Console.BPLAYER){
-				if (((depth - 1)/ 2) % 2 ==0) {
+		if (in.getH() == 0) {
+			if (depth == DEPTHLIMIT || in.getChildren().isEmpty()) {
+				in.setH();
+			} else {
+				for (Node temp : in.getChildren()) {
+					uploadH(temp, depth + 1);
+				}
+				if (pl == Console.BPLAYER){
 					in.getMax();
 				} else {
-					in.getMin(); 
-				}
-			} else {
-				if (((depth - 1)/ 2) % 2 ==0) {
 					in.getMin();
-				} else {
-					in.getMax();
 				}
-			}
-		} 
-	}
-	
-	
-	
-	
-	
-
-}
-class Node {
-	private basics myBasics;
-	private int HeuristicValue;
-	private List<Node> myChildren;
-	private char player;
-	
-	public Node(basics Input, char p) {
-		myBasics = Input;
-		player = p;
-		HeuristicAndValueMap temp = new HeuristicAndValueMap(Input.getState());
-		if (temp.checkWin() == HeuristicAndValueMap.BWIN) {
-			HeuristicValue = HeuristicAndValueMap.FIVEINAROW;
-		} else if (temp.checkWin() == HeuristicAndValueMap.WWIN) {
-			HeuristicValue = -HeuristicAndValueMap.FIVEINAROW;
-		} else if (temp.checkWin() == HeuristicAndValueMap.TIE) {
-			if (player == Console.BPLAYER) {
-				HeuristicValue = HeuristicAndValueMap.FIVEINAROW - 1000;
-			} else {
-				HeuristicValue = - HeuristicAndValueMap.FIVEINAROW + 1000;
-			}
-		} else {
-			HeuristicValue = 0;
-		}	
-		myChildren = new ArrayList<>();
-	}
-	public basics getBasics() {
-		return myBasics;
-	}
-	
-	public void setH() {
-		HeuristicAndValueMap temp = new HeuristicAndValueMap(myBasics.getState());
-		Map<String, int[]> theMap = temp.getHeuristics();
-		for (String e : theMap.keySet()) {
-			HeuristicValue = HeuristicValue + theMap.get(e)[0] - theMap.get(e)[1];
+			} 
 		}
 		
-		
-	}
-	
-	public int getH(){
-		return HeuristicValue;
-	}
-	
-	public void addC(Node i) {
-		myChildren.add(i);
-	}
-	
-	public Node getMin () {
-		Queue<Node> sort = new PriorityQueue <>(compMin());
-		if(myChildren.isEmpty()) {
-			return this;
-		} else {
-			for (Node temp : myChildren) {
-				sort.add(temp);
-			}
-		}
-		HeuristicValue = sort.peek().getH();
-		return sort.peek();
-	}
-	
-	public List<Node> getChildren () {
-		return myChildren;
-	}
-	
-	public Node getMax () {
-		Queue<Node> sort = new PriorityQueue <>(compMax());
-		if(myChildren.isEmpty()) {
-			return this;
-		} else {
-			for (Node temp : myChildren) {
-				sort.add(temp);
-			}
-		}
-		HeuristicValue = sort.peek().getH();
-		return sort.peek();
-	}
-	
-	private Comparator<Node> compMin() {
-		Comparator<Node> h1 =  new Comparator<Node>(){  
-            public int compare(Node o1, Node o2) {  
-                // TODO Auto-generated method stub  
-                int numbera = o1.getH();  
-                int numberb = o2.getH();  
-                if(numberb > numbera){  
-                    return -1;  
-                }  
-                else if(numberb<numbera){  
-                    return 1;  
-                }  
-                else {  
-                    return 0;  
-                }  
-              
-            }  
-		};
-		return h1;
-	}
-	private Comparator<Node> compMax() {
-		
-		Comparator<Node> h1 =  new Comparator<Node>(){  
-            public int compare(Node o1, Node o2) {  
-                // TODO Auto-generated method stub  
-                int numbera = o1.getH();  
-                int numberb = o2.getH(); 
-                if(numberb > numbera){  
-                    return 1;  
-                }  
-                else if(numberb<numbera){  
-                    return -1;  
-                }  
-                else {  
-                    return 0;  
-                }  
-              
-            }  
-		};
-		return h1;
 	}
 }
-

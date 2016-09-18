@@ -15,7 +15,7 @@ public class basics {
 	 * int showing misrotate
 	 */
 	public static int ROTERROR = -20;
-
+	private int myStepCount;
 	/**
 	 * constructor
 	 */
@@ -24,8 +24,10 @@ public class basics {
 		for (int i = 0; i < 4; i ++) {
 			myPlates.add(new char[3][3]);
 		}
+		myStepCount = 0;
 		initialize();
 	}
+	
 	/**
 	 * method to put
 	 * @param place place to put
@@ -38,6 +40,7 @@ public class basics {
 		int j = (place) % 3;
 		if ((myPlates.get(plate))[i][j] == '-') {
 			(myPlates.get(plate))[i][j] = player;
+			myStepCount ++;
 			return true;
 		} else {
 //			System.out.println("Sth wrong: place = " + 
@@ -96,6 +99,9 @@ public class basics {
 		}
 		
 	}
+	public int getStepCount() {
+		return myStepCount;
+	}
 	
 	/**
 	 * method to initialize a new game
@@ -143,6 +149,7 @@ public class basics {
 				}
 			}
 		}
+		re.myStepCount = this.myStepCount;
 		return re;
 	}
 	public char[][] getPlate (int plateNum) {
@@ -153,6 +160,12 @@ public class basics {
 	 * method to print the state
 	 */
 	public void print() {
+		System.out.println(toString());
+	}
+	/**
+	 * method to get the string that shows the board
+	 */
+	public String toString() {
 		StringBuilder s = new StringBuilder();
 		for (int i = 0; i < 9; i ++) {
 			for (int j = 0; j < 9; j ++) {
@@ -178,8 +191,9 @@ public class basics {
 			}
 			s.append('\n');
 		}
-		System.out.println(s.toString());
-		
+		return s.toString();
 	}
+	
+	
 
 }
